@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Écriture des nombres — Chèques</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=IBM+Plex+Sans:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --ink: #1a1a2e;
+      --paper: #f8f6f1;
+      --accent: #c0392b;
+      --accent-light: #e74c3c;
+      --accent-bg: #fdf2f0;
+      --muted: #6b7280;
+      --border: #e5e1da;
+      --card: #ffffff;
+      --shadow: 0 1px 3px rgba(0,0,0,0.06), 0 6px 16px rgba(0,0,0,0.04);
+      --shadow-lg: 0 4px 12px rgba(0,0,0,0.08), 0 16px 40px rgba(0,0,0,0.06);
+      --radius: 12px;
+      --transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'IBM Plex Sans', sans-serif;
+      background: var(--paper);
+      color: var(--ink);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Subtle grid background */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.02) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .container {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Header */
+    header {
+      text-align: center;
+      margin-bottom: 3rem;
+      animation: fadeUp 0.6s ease-out;
+    }
+
+    header .tag {
+      display: inline-block;
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--accent);
+      background: var(--accent-bg);
+      padding: 0.35rem 0.9rem;
+      border-radius: 100px;
+      margin-bottom: 1.2rem;
+    }
+
+    header h1 {
+      font-family: 'DM Serif Display', serif;
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      font-weight: 400;
+      line-height: 1.2;
+      color: var(--ink);
+      margin-bottom: 0.6rem;
+    }
+
+    header p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      font-weight: 300;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    /* Input Section */
+    .input-section {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 2rem;
+      margin-bottom: 1.5rem;
+      border: 1px solid var(--border);
+      animation: fadeUp 0.6s ease-out 0.1s both;
+    }
+
+    .input-section label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .input-wrapper {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .input-wrapper input {
+      flex: 1;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1.6rem;
+      font-weight: 500;
+      padding: 0.75rem 1rem;
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      background: var(--paper);
+      color: var(--ink);
+      outline: none;
+      transition: border-color var(--transition);
+    }
+
+    .input-wrapper input:focus {
+      border-color: var(--accent);
+    }
+
+    .input-wrapper input::placeholder {
+      color: #c4c0b8;
+      font-weight: 400;
+    }
+
+    .input-wrapper .currency {
+      font-size: 1.1rem;
+      font-weight: 500;
+      color: var(--muted);
+      white-space: nowrap;
+    }
+
+    .quick-examples {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.4rem;
+      margin-top: 1rem;
+    }
+
+    .quick-examples button {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      padding: 0.3rem 0.65rem;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      background: var(--paper);
+      color: var(--muted);
+      cursor: pointer;
+      transition: all var(--transition);
+    }
+
+    .quick-examples button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      background: var(--accent-bg);
+    }
+
+    /* Result Section */
+    .result-section {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      animation: fadeUp 0.6s ease-out 0.2s both;
+      transition: box-shadow var(--transition);
+    }
+
+    .result-section.active {
+      box-shadow: var(--shadow-lg);
+    }
+
+    .result-header {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 1.2rem 2rem;
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(135deg, #fafaf7, #f5f3ee);
+    }
+
+    .result-header .icon {
+      width: 28px;
+      height: 28px;
+      background: var(--accent);
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .result-header .icon svg {
+      width: 16px;
+      height: 16px;
+      fill: white;
+    }
+
+    .result-header h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.1rem;
+      font-weight: 400;
+    }
+
+    .result-body {
+      padding: 2rem;
+    }
+
+    .result-empty {
+      text-align: center;
+      padding: 2rem 1rem;
+      color: var(--muted);
+      font-size: 0.9rem;
+      font-weight: 300;
+    }
+
+    .result-empty .arrow {
+      font-size: 1.5rem;
+      display: block;
+      margin-bottom: 0.5rem;
+      opacity: 0.3;
+    }
+
+    /* Check preview */
+    .check-preview {
+      background: linear-gradient(135deg, #fffef9, #faf8f3);
+      border: 2px solid var(--border);
+      border-radius: 8px;
+      padding: 1.5rem;
+      margin-bottom: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .check-preview::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light), var(--accent));
+    }
+
+    .check-label {
+      font-size: 0.65rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.5rem;
+    }
+
+    .check-amount {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.35rem;
+      line-height: 1.5;
+      color: var(--ink);
+      word-break: break-word;
+    }
+
+    .check-amount .centimes {
+      color: var(--accent);
+    }
+
+    /* Nomenclature / Rules */
+    .nomenclature {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .rule-item {
+      display: flex;
+      gap: 1rem;
+      padding: 0.85rem 1rem;
+      background: var(--paper);
+      border-radius: 8px;
+      border: 1px solid transparent;
+      transition: all var(--transition);
+    }
+
+    .rule-item:hover {
+      border-color: var(--border);
+    }
+
+    .rule-item .num {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--accent);
+      background: var(--accent-bg);
+      width: 28px;
+      height: 28px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .rule-item .rule-content {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .rule-item .rule-title {
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 0.15rem;
+      color: var(--ink);
+    }
+
+    .rule-item .rule-desc {
+      font-size: 0.8rem;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.5;
+    }
+
+    .rule-item .rule-example {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      margin-top: 0.3rem;
+      display: block;
+    }
+
+    /* Breakdown table */
+    .breakdown {
+      margin-top: 1rem;
+      padding-top: 1rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .breakdown h3 {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 0.7rem;
+    }
+
+    .breakdown-grid {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.3rem 1rem;
+      font-size: 0.82rem;
+    }
+
+    .breakdown-grid .bk-num {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 500;
+      color: var(--ink);
+      text-align: right;
+    }
+
+    .breakdown-grid .bk-word {
+      color: var(--muted);
+      font-weight: 300;
+    }
+
+    /* Footer rules section */
+    .rules-section {
+      margin-top: 2rem;
+      animation: fadeUp 0.6s ease-out 0.3s both;
+    }
+
+    .rules-section h2 {
+      font-family: 'DM Serif Display', serif;
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+    }
+
+    .rules-grid {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .rules-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1.2rem 1.4rem;
+      box-shadow: var(--shadow);
+      transition: all var(--transition);
+    }
+
+    .rules-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-1px);
+    }
+
+    .rules-card h3 {
+      font-size: 0.85rem;
+      font-weight: 600;
+      margin-bottom: 0.4rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .rules-card h3 .dot {
+      width: 8px;
+      height: 8px;
+      background: var(--accent);
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .rules-card p {
+      font-size: 0.82rem;
+      color: var(--muted);
+      font-weight: 300;
+      line-height: 1.6;
+      margin-bottom: 0.3rem;
+    }
+
+    .rules-card code {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.78rem;
+      color: var(--accent);
+      background: var(--accent-bg);
+      padding: 0.1rem 0.4rem;
+      border-radius: 4px;
+    }
+
+    /* Error */
+    .error-msg {
+      background: #fef2f2;
+      border: 1px solid #fecaca;
+      color: #b91c1c;
+      padding: 0.7rem 1rem;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .error-msg.visible { display: block; }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 3rem;
+      padding-top: 2rem;
+      border-top: 1px solid var(--border);
+      font-size: 0.75rem;
+      color: var(--muted);
+      font-weight: 300;
+      animation: fadeUp 0.6s ease-out 0.4s both;
+    }
+
+    footer a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(12px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .container { padding: 1.5rem 1rem 3rem; }
+      .input-section, .result-body { padding: 1.3rem; }
+      .input-wrapper input { font-size: 1.3rem; }
+      .check-amount { font-size: 1.15rem; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <span class="tag">Outil pratique</span>
+    <h1>Écriture des nombres<br>en toutes lettres</h1>
+    <p>Convertissez un montant en son écriture correcte pour vos chèques, en respectant les règles orthographiques françaises.</p>
+  </header>
+
+  <section class="input-section">
+    <label for="numberInput">Montant à convertir</label>
+    <div class="input-wrapper">
+      <input
+        type="text"
+        id="numberInput"
+        placeholder="Ex : 1 254,80"
+        inputmode="decimal"
+        autocomplete="off"
+      >
+      <span class="currency">euros (€)</span>
+    </div>
+    <div class="quick-examples">
+      <button onclick="setExample('100')">100</button>
+      <button onclick="setExample('5,40')">5,40</button>
+      <button onclick="setExample('23,80')">23,80</button>
+      <button onclick="setExample('80')">80</button>
+      <button onclick="setExample('200')">200</button>
+      <button onclick="setExample('71')">71</button>
+      <button onclick="setExample('1 500')">1 500</button>
+      <button onclick="setExample('2 380,75')">2 380,75</button>
+      <button onclick="setExample('80 000')">80 000</button>
+      <button onclick="setExample('200 000')">200 000</button>
+      <button onclick="setExample('0,50')">0,50</button>
+    </div>
+  </section>
+
+  <div id="errorMsg" class="error-msg"></div>
+
+  <section class="result-section" id="resultSection">
+    <div class="result-header">
+      <div class="icon">
+        <svg viewBox="0 0 24 24"><path d="M9 12l2 2 4-4m5 2a9 9 0 11-18 0 9 9 0 0118 0z" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </div>
+      <h2>Résultat pour votre chèque</h2>
+    </div>
+    <div class="result-body" id="resultBody">
+      <div class="result-empty">
+        <span class="arrow">↑</span>
+        Saisissez un montant ci-dessus pour voir son écriture en toutes lettres.
+      </div>
+    </div>
+  </section>
+
+  <section class="rules-section">
+    <h2>Règles d'écriture</h2>
+    <div class="rules-grid">
+      <div class="rules-card">
+        <h3><span class="dot"></span> Trait d'union partout (réforme 1990)</h3>
+        <p>Depuis la réforme orthographique de 1990, on met des traits d'union entre tous les mots d'un nombre composé, y compris autour de <code>et</code>.</p>
+        <p><code>vingt-et-un</code> · <code>deux-cent-trente-quatre</code> · <code>soixante-et-onze</code></p>
+      </div>
+      <div class="rules-card">
+        <h3><span class="dot"></span> Accord de « vingt » et « cent »</h3>
+        <p><strong>Vingt</strong> prend un <em>s</em> uniquement dans <code>quatre-vingts</code> (= 4 × 20) quand il n'est suivi d'aucun autre adjectif numéral.</p>
+        <p><strong>Cent</strong> prend un <em>s</em> quand il est multiplié et non suivi d'un autre adjectif numéral : <code>deux-cents</code>, mais <code>deux-cent-trois</code>.</p>
+        <p><strong>Attention :</strong> devant <code>mille</code> (adjectif numéral), ils perdent le <em>s</em> : <code>deux-cent-mille</code>, <code>quatre-vingt-mille</code>. Mais devant <code>million</code> / <code>milliard</code> (noms), ils gardent le <em>s</em> : <code>deux-cents-millions</code>, <code>quatre-vingts-milliards</code>.</p>
+      </div>
+      <div class="rules-card">
+        <h3><span class="dot"></span> « Mille » est invariable, « million » et « milliard » s'accordent</h3>
+        <p><code>mille</code> est un adjectif numéral : il ne prend jamais de <em>s</em>. On écrit <code>deux-mille</code>, <code>dix-mille</code>.</p>
+        <p><code>million</code> et <code>milliard</code> sont des <strong>noms communs</strong> : ils prennent un <em>s</em> au pluriel (<code>deux-millions</code>, <code>trois-milliards</code>). Devant eux, <code>cent</code> et <code>vingt</code> gardent leur <em>s</em> de pluriel.</p>
+      </div>
+      <div class="rules-card">
+        <h3><span class="dot"></span> Les centimes</h3>
+        <p>La partie décimale (après la virgule ou le point) représente les <strong>centimes</strong>. On les écrit en toutes lettres après <code>euros et</code>.</p>
+        <p>Exemple : <code>23,80</code> → <code>vingt-trois euros et quatre-vingts centimes</code></p>
+      </div>
+      <div class="rules-card">
+        <h3><span class="dot"></span> « et » dans les dizaines</h3>
+        <p>On utilise <code>et</code> dans : 21, 31, 41, 51, 61 et 71. On ne l'utilise <strong>pas</strong> pour 81 ni 91.</p>
+        <p><code>vingt-et-un</code> · <code>soixante-et-onze</code> · mais <code>quatre-vingt-un</code></p>
+      </div>
+      <div class="rules-card">
+        <h3><span class="dot"></span> Séparateur décimal</h3>
+        <p>En français, le séparateur décimal est la <strong>virgule</strong>. Le point est aussi accepté en saisie. Cet outil reconnaît les deux.</p>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    Règles conformes à la réforme orthographique de 1990 — <a href="https://www.academie-francaise.fr/" target="_blank" rel="noopener">Académie française</a>
+  </footer>
+</div>
+
+<script>
+/**
+ * French number-to-words converter — conforming to 1990 spelling reform.
+ * Hyphens between ALL compound number words, including around "et".
+ */
+
+const UNITS = ['', 'un', 'deux', 'trois', 'quatre', 'cinq', 'six', 'sept', 'huit', 'neuf',
+  'dix', 'onze', 'douze', 'treize', 'quatorze', 'quinze', 'seize',
+  'dix-sept', 'dix-huit', 'dix-neuf'];
+
+const TENS = ['', 'dix', 'vingt', 'trente', 'quarante', 'cinquante',
+  'soixante', 'soixante', 'quatre-vingt', 'quatre-vingt'];
+
+/**
+ * Convert an integer 0–999 to French words.
+ */
+function convertBelow1000(n) {
+  if (n === 0) return '';
+  if (n < 20) return UNITS[n];
+
+  const hundreds = Math.floor(n / 100);
+  const remainder = n % 100;
+
+  let result = '';
+
+  if (hundreds > 0) {
+    if (hundreds === 1) {
+      result = 'cent';
+    } else {
+      result = UNITS[hundreds] + '-cent';
+      if (remainder === 0) {
+        result += 's'; // deux-cents, trois-cents (multiplied, nothing follows)
+      }
+    }
+  }
+
+  if (remainder > 0) {
+    const tensWord = convertTens(remainder);
+    if (result) {
+      result += '-' + tensWord;
+    } else {
+      result = tensWord;
+    }
+  }
+
+  return result;
+}
+
+/**
+ * Convert 1–99 to French words.
+ */
+function convertTens(n) {
+  if (n < 20) return UNITS[n];
+
+  const ten = Math.floor(n / 10);
+  const unit = n % 10;
+
+  // 70–79: soixante-dix, soixante-et-onze, soixante-douze…
+  if (ten === 7) {
+    const sub = 10 + unit; // 10..19
+    if (unit === 1) {
+      return 'soixante-et-onze';
+    }
+    return 'soixante-' + UNITS[sub];
+  }
+
+  // 90–99: quatre-vingt-dix, quatre-vingt-onze…
+  if (ten === 9) {
+    const sub = 10 + unit;
+    return 'quatre-vingt-' + UNITS[sub];
+  }
+
+  // 80–89
+  if (ten === 8) {
+    if (unit === 0) return 'quatre-vingts'; // with 's'
+    return 'quatre-vingt-' + UNITS[unit]; // no 's'
+  }
+
+  // 20–69 (standard tens)
+  if (unit === 0) return TENS[ten];
+
+  // "et" for 21, 31, 41, 51, 61
+  if (unit === 1) {
+    return TENS[ten] + '-et-un';
+  }
+
+  return TENS[ten] + '-' + UNITS[unit];
+}
+
+/**
+ * Convert a non-negative integer to French words.
+ * Supports up to 999 999 999 999 (milliards).
+ */
+function integerToWords(n) {
+  if (n === 0) return 'zéro';
+  if (n < 0) return 'moins ' + integerToWords(-n);
+
+  const parts = [];
+
+  // Milliards
+  const milliards = Math.floor(n / 1000000000);
+  if (milliards > 0) {
+    if (milliards === 1) {
+      parts.push('un-milliard');
+    } else {
+      parts.push(convertBelow1000(milliards) + '-milliards');
+    }
+  }
+  n %= 1000000000;
+
+  // Millions
+  const millions = Math.floor(n / 1000000);
+  if (millions > 0) {
+    if (millions === 1) {
+      parts.push('un-million');
+    } else {
+      parts.push(convertBelow1000(millions) + '-millions');
+    }
+  }
+  n %= 1000000;
+
+  // Milliers
+  const thousands = Math.floor(n / 1000);
+  if (thousands > 0) {
+    if (thousands === 1) {
+      parts.push('mille'); // never "un-mille"
+    } else {
+      let thousandsText = convertBelow1000(thousands);
+      // "cent" and "vingt" lose their plural "s" before "mille" (numeral adjective)
+      // but keep it before "million"/"milliard" (nouns) — handled above
+      thousandsText = thousandsText.replace(/cents$/, 'cent').replace(/vingts$/, 'vingt');
+      parts.push(thousandsText + '-mille');
+    }
+  }
+  n %= 1000;
+
+  // Unités
+  if (n > 0) {
+    parts.push(convertBelow1000(n));
+  }
+
+  return parts.join('-');
+}
+
+/**
+ * Parse user input: accept comma or dot as decimal separator,
+ * spaces as thousand separators.
+ */
+function parseInput(raw) {
+  let str = raw.trim();
+  if (!str) return null;
+
+  // Remove spaces (thousand separators)
+  str = str.replace(/\s/g, '');
+
+  // Replace comma with dot
+  str = str.replace(',', '.');
+
+  // Validate
+  if (!/^\d+(\.\d{0,2})?$/.test(str)) return null;
+
+  const num = parseFloat(str);
+  if (isNaN(num) || num < 0 || num > 999999999999.99) return null;
+
+  const intPart = Math.floor(num);
+  // Get centimes: round to avoid floating point issues
+  const centimes = Math.round((num - intPart) * 100);
+
+  return { intPart, centimes, original: num };
+}
+
+/**
+ * Build the full check writing string.
+ */
+function formatForCheck(intPart, centimes) {
+  let result = '';
+
+  if (intPart === 0 && centimes === 0) {
+    return 'zéro euro';
+  }
+
+  if (intPart > 0) {
+    result = integerToWords(intPart) + (intPart === 1 ? ' euro' : ' euros');
+  }
+
+  if (centimes > 0) {
+    if (intPart > 0) {
+      result += ' et ';
+    }
+    result += integerToWords(centimes) + (centimes === 1 ? ' centime' : ' centimes');
+  }
+
+  if (intPart > 0 && centimes === 0) {
+    // nothing extra
+  }
+
+  return result;
+}
+
+/**
+ * Build decomposition rules for a number.
+ */
+function getAppliedRules(intPart, centimes) {
+  const rules = [];
+  const n = intPart;
+
+  const thousandsPart = Math.floor((n % 1000000) / 1000);
+  const unitsPart = n % 1000;
+  const millionsPart = Math.floor((n % 1000000000) / 1000000);
+  const milliardsPart = Math.floor(n / 1000000000);
+
+  // Check for "quatre-vingts" / "quatre-vingt" rule
+  const checkVingt = (val, context) => {
+    const lastTwo = val % 100;
+    const tens = Math.floor(lastTwo / 10);
+    if (tens === 8) {
+      if (lastTwo === 80) {
+        if (context === 'mille') {
+          rules.push({ num: '1', title: '« Quatre-vingt » sans s devant mille', desc: '80 × 1000 → pas de s car « mille » est un adjectif numéral.', example: 'quatre-vingt-mille' });
+        } else if (context === 'million' || context === 'milliard') {
+          rules.push({ num: '1', title: '« Quatre-vingts » avec s devant ' + context, desc: `80 × ${context} → garde le s car « ${context} » est un nom.`, example: 'quatre-vingts-' + context + 's' });
+        } else {
+          rules.push({ num: '1', title: 'Accord de « quatre-vingts »', desc: '80 = 4 × 20 → prend un s car rien ne suit.', example: 'quatre-vingts' });
+        }
+      } else {
+        rules.push({ num: '1', title: '« Quatre-vingt » sans s', desc: `${lastTwo} : pas de s car suivi d'un nombre.`, example: convertTens(lastTwo) });
+      }
+    }
+  };
+
+  // Check "cent" rule
+  const checkCent = (val, context) => {
+    const hundreds = Math.floor(val / 100) % 10;
+    const afterHundreds = val % 100;
+    if (hundreds > 1) {
+      if (afterHundreds === 0) {
+        if (context === 'mille') {
+          rules.push({ num: '2', title: '« Cent » sans s devant mille', desc: `${hundreds} × 100 devant mille → pas de s car « mille » est un adjectif numéral.`, example: UNITS[hundreds] + '-cent-mille' });
+        } else if (context === 'million' || context === 'milliard') {
+          rules.push({ num: '2', title: '« Cents » avec s devant ' + context, desc: `${hundreds} × 100 devant ${context} → garde le s car « ${context} » est un nom.`, example: UNITS[hundreds] + '-cents-' + context + 's' });
+        } else {
+          rules.push({ num: '2', title: 'Accord de « cents »', desc: `${hundreds} × 100 → prend un s car rien ne suit.`, example: UNITS[hundreds] + '-cents' });
+        }
+      } else {
+        rules.push({ num: '2', title: '« Cent » sans s', desc: `${hundreds} × 100 + reste → pas de s car suivi d'un nombre.`, example: UNITS[hundreds] + '-cent-…' });
+      }
+    }
+  };
+
+  // Apply checks in order: milliards, millions, thousands, units
+  if (milliardsPart > 0) {
+    checkVingt(milliardsPart, 'milliard');
+    checkCent(milliardsPart, 'milliard');
+  }
+  if (millionsPart > 0) {
+    checkVingt(millionsPart, 'million');
+    checkCent(millionsPart, 'million');
+  }
+  if (thousandsPart > 0) {
+    checkVingt(thousandsPart, 'mille');
+    checkCent(thousandsPart, 'mille');
+  }
+  if (unitsPart > 0 && n >= 1000) {
+    // Only show unit-level rules if there's a thousands+ part (to avoid duplicates for small numbers)
+    checkVingt(unitsPart, null);
+    if (rules.filter(r => r.num === '2').length === 0) checkCent(unitsPart, null);
+  }
+  if (n < 1000) {
+    checkVingt(n, null);
+    checkCent(n, null);
+  }
+
+  // Check for "et" usage
+  const lastTwo = n % 100;
+  if ([21, 31, 41, 51, 61, 71].includes(lastTwo)) {
+    rules.push({ num: '3', title: 'Utilisation de « et »', desc: `${lastTwo} utilise « et » entre la dizaine et l'unité.`, example: convertTens(lastTwo) });
+  }
+  if ([81, 91].includes(lastTwo)) {
+    rules.push({ num: '3', title: 'Pas de « et »', desc: `${lastTwo} : on n'utilise pas « et » après quatre-vingt.`, example: convertTens(lastTwo) });
+  }
+
+  // Mille
+  if (n >= 1000 && n < 2000) {
+    rules.push({ num: '4', title: '« Mille » seul', desc: 'On écrit « mille » et jamais « un-mille ».', example: 'mille' });
+  } else if (n >= 2000 && thousandsPart > 0) {
+    rules.push({ num: '4', title: '« Mille » invariable', desc: '« Mille » ne prend jamais de s, même multiplié.', example: integerToWords(thousandsPart * 1000).split('-').slice(0, -1).join('-') + '-mille' });
+  }
+
+  // Million / Milliard
+  if (millionsPart > 0) {
+    rules.push({ num: '5', title: millionsPart > 1 ? '« Millions » au pluriel' : '« Million » (nom)', desc: '« Million » est un nom commun, il prend un s au pluriel.', example: millionsPart > 1 ? convertBelow1000(millionsPart) + '-millions' : 'un-million' });
+  }
+  if (milliardsPart > 0) {
+    rules.push({ num: '5', title: milliardsPart > 1 ? '« Milliards » au pluriel' : '« Milliard » (nom)', desc: '« Milliard » est un nom commun, il prend un s au pluriel.', example: milliardsPart > 1 ? convertBelow1000(milliardsPart) + '-milliards' : 'un-milliard' });
+  }
+
+  // Centimes
+  if (centimes > 0) {
+    rules.push({ num: '6', title: 'Centimes', desc: `La partie décimale (${centimes}) est écrite en toutes lettres après « euros et ».`, example: integerToWords(centimes) + (centimes === 1 ? ' centime' : ' centimes') });
+  }
+
+  if (centimes === 80) {
+    rules.push({ num: '7', title: 'Quatre-vingts centimes', desc: '80 centimes → quatre-vingts prend un s car rien ne suit.', example: 'quatre-vingts centimes' });
+  }
+
+  return rules;
+}
+
+/**
+ * Build decomposition of the number.
+ */
+function getBreakdown(intPart, centimes) {
+  const items = [];
+
+  if (intPart >= 1000000000) {
+    const b = Math.floor(intPart / 1000000000);
+    items.push({ num: b + ' milliard(s)', word: integerToWords(b * 1000000000) });
+  }
+  if (intPart >= 1000000) {
+    const m = Math.floor((intPart % 1000000000) / 1000000);
+    if (m > 0) items.push({ num: m + ' million(s)', word: integerToWords(m * 1000000) });
+  }
+  if (intPart >= 1000) {
+    const k = Math.floor((intPart % 1000000) / 1000);
+    if (k > 0) items.push({ num: k + ' × 1 000', word: integerToWords(k * 1000) });
+  }
+  const remainder = intPart % 1000;
+  if (remainder > 0 && intPart >= 1000) {
+    items.push({ num: remainder.toString(), word: integerToWords(remainder) });
+  }
+
+  if (centimes > 0) {
+    items.push({ num: centimes + ' cts', word: integerToWords(centimes) });
+  }
+
+  return items;
+}
+
+// ── DOM ──
+
+const input = document.getElementById('numberInput');
+const resultSection = document.getElementById('resultSection');
+const resultBody = document.getElementById('resultBody');
+const errorMsg = document.getElementById('errorMsg');
+
+function setExample(val) {
+  input.value = val;
+  input.dispatchEvent(new Event('input'));
+  input.focus();
+}
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+input.addEventListener('input', () => {
+  const raw = input.value;
+  errorMsg.classList.remove('visible');
+
+  if (!raw.trim()) {
+    resultSection.classList.remove('active');
+    resultBody.innerHTML = `
+      <div class="result-empty">
+        <span class="arrow">↑</span>
+        Saisissez un montant ci-dessus pour voir son écriture en toutes lettres.
+      </div>`;
+    return;
+  }
+
+  const parsed = parseInput(raw);
+
+  if (!parsed) {
+    errorMsg.textContent = 'Veuillez saisir un nombre valide (ex : 1 254,80). Maximum 2 décimales, séparateur virgule ou point.';
+    errorMsg.classList.add('visible');
+    resultSection.classList.remove('active');
+    resultBody.innerHTML = '';
+    return;
+  }
+
+  const { intPart, centimes } = parsed;
+  const checkText = formatForCheck(intPart, centimes);
+  const rules = getAppliedRules(intPart, centimes);
+  const breakdown = getBreakdown(intPart, centimes);
+
+  resultSection.classList.add('active');
+
+  // Build check text with centimes highlighted
+  let displayText = capitalize(checkText);
+
+  let html = `
+    <div class="check-preview">
+      <div class="check-label">Écriture pour le chèque</div>
+      <div class="check-amount">${displayText}</div>
+    </div>`;
+
+  if (rules.length > 0) {
+    html += `<div class="nomenclature">`;
+    html += `<div class="check-label">Règles appliquées</div>`;
+    for (const r of rules) {
+      html += `
+        <div class="rule-item">
+          <span class="num">${r.num}</span>
+          <div class="rule-content">
+            <div class="rule-title">${r.title}</div>
+            <div class="rule-desc">${r.desc}</div>
+            <span class="rule-example">→ ${r.example}</span>
+          </div>
+        </div>`;
+    }
+    html += `</div>`;
+  }
+
+  if (breakdown.length > 1) {
+    html += `
+      <div class="breakdown">
+        <h3>Décomposition</h3>
+        <div class="breakdown-grid">`;
+    for (const b of breakdown) {
+      html += `<span class="bk-num">${b.num}</span><span class="bk-word">${b.word}</span>`;
+    }
+    html += `</div></div>`;
+  }
+
+  resultBody.innerHTML = html;
+});
+
+// Trigger on load if URL has hash
+if (window.location.hash) {
+  const val = decodeURIComponent(window.location.hash.slice(1));
+  input.value = val;
+  input.dispatchEvent(new Event('input'));
+}
+</script>
+
+</body>
+</html>
